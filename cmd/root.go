@@ -40,3 +40,15 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
+
+type Pokemon struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Peso   int    `json:"weight"`
+	Altura int    `json:"height"`
+	// Habilidades Abiliti `json:"abilities"`
+}
+
+type Abiliti struct {
+	Name string `json:"name"`
+}

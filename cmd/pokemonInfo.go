@@ -6,28 +6,34 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // randomCmd represents the random command
-var randomCmd = &cobra.Command{
-	Use:   "random",
-	Short: "Pokemon random",
-	Long:  `Descripción larga de pokemon random`,
+var pokemonInfo = &cobra.Command{
+	Use:   "pokemon",
+	Short: "Pokemon Info",
+	Long:  `Devuelve información básica a cerca del pokémon`,
 	Run: func(cmd *cobra.Command, args []string) {
-		getRandomPokemon()
+
+		if len(args) > 0 {
+			getPokemonInfo(args[0])
+		} else {
+			fmt.Println(errors.New("no se ha especificado ningún pokémon"))
+		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(randomCmd)
+	rootCmd.AddCommand(pokemonInfo)
 
 	// Here you will define your flags and configuration settings.
 
@@ -40,21 +46,22 @@ func init() {
 	// randomCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func getRandomPokemon() {
-	rand.Seed(time.Now().UnixNano())
-	randomNum := fmt.Sprintf("%d", rand.Intn(905))
-	endpoint := "https://pokeapi.co/api/v2/pokemon/" + randomNum
-	responseBytes := getPokemonData(endpoint)
+func getPokemonInfo(pokemonName string) {
+	endpoint := "https://pokeapi.co/api/v2/pokemon/" + pokemonName
+	responseBytes := getPokemonInfoTest(endpoint)
 	pokemon := Pokemon{}
 
 	if err := json.Unmarshal(responseBytes, &pokemon); err != nil {
 		log.Printf("No se ha podido coger un pokemon - %v", err)
 	}
 
-	fmt.Println(pokemon.Name)
+	fmt.Println("ID: ", pokemon.ID)
+	fmt.Println("Nombre: ", cases.Title(language.Und).String(pokemon.Name))
+	fmt.Println("Altura: ", pokemon.Altura)
+	fmt.Println("Peso: ", pokemon.Peso)
 }
 
-func getPokemonData(baseAPI string) []byte {
+func getPokemonInfoTest(baseAPI string) []byte {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		baseAPI,
