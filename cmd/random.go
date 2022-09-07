@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -44,8 +46,10 @@ type Pokemon struct {
 }
 
 func getRandomPokemon() {
-	url := "https://pokeapi.co/api/v2/pokemon/5"
-	responseBytes := getPokemonData(url)
+	rand.Seed(time.Now().UnixNano())
+	randomNum := fmt.Sprintf("%d", rand.Intn(905))
+	endpoint := "https://pokeapi.co/api/v2/pokemon/" + randomNum
+	responseBytes := getPokemonData(endpoint)
 	pokemon := Pokemon{}
 
 	if err := json.Unmarshal(responseBytes, &pokemon); err != nil {
